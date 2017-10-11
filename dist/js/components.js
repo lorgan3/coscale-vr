@@ -177,14 +177,13 @@ AFRAME.registerComponent('boat', {
         this.pole = new THREE.Mesh(new THREE.BoxBufferGeometry(0.1, 12, 0.1), new THREE.MeshBasicMaterial({ color: 0x8b4513 }));
         this.pole.position.set(-16, 12, 4);
 
-        let loadFlag = texture => {
+        let loader = new THREE.TextureLoader();
+        loader.load(this.data.flag, texture => {
             this.flag.material.color.set(0xffffff);
             this.flag.material.map = texture;
             this.flag.material.needsUpdate = true;
-        };
+        });
 
-        var loader = new THREE.TextureLoader();
-        loader.load(this.data.flag, loadFlag);
         this.flag = new THREE.Mesh(new THREE.PlaneBufferGeometry(4, 4), new THREE.MeshBasicMaterial({ color: 0x183648, side: THREE.DoubleSide }));
 
         this.flag.position.set(0, 4, 0);
@@ -271,14 +270,9 @@ AFRAME.registerComponent('change-color', {
 AFRAME.registerComponent('click', {
     schema: {
         function: { type: 'string' },
-        propagate: { type: 'boolean', default: false },
         scaleOnHover: { type: 'boolean', default: false }
     }, init: function () {
         this.el.addEventListener('click', e => {
-            if (this.data.propagate === false) {
-                e.stopPropagation();
-            }
-
             window[this.data.function](e, this.el);
         });
 

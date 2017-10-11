@@ -28,40 +28,60 @@ const CONTAINER_COLORS = {
 
 // find the dashboard to get data from.
 let url = new URL(location);
-let appId = url.searchParams.get('app') || '0196891a-fc0e-4849-95d3-530cb0835a45';
-let dashboardId = url.searchParams.get('dashboard') || 'f3f6814b-0b40-4c08-a705-a8e473966b6c';
+let appId = url.searchParams.get('app');
+let headers = new Headers();
 
-Promise.all([fetch('servergroups.json').then(response => response.json()).then(json => json.map(data => new ServerGroup(data))), fetch('servers.json').then(response => response.json()).then(json => json.map(data => new Server(data)))]).then(result => {
-    let root = ServerGroup.getRoot();
+if (appId === null) {
+    appId = '0196891a-fc0e-4849-95d3-530cb0835a45';
+    headers.append('DashboardAuthorization', '80e97d00-6e22-472b-b5a9-c9e3701bfc40');
+} else {
+    headers.append('HTTPAuthorization', prompt('HTTPAuthorization for ' + appId));
+}
 
+Promise.all([fetch('https://app.coscale.com/api/v1/app/' + appId + '/servergroups/?start=-604800&stop=0&expand=parentId&expand=serverIds', { headers: headers }).then(response => response.json()).then(json => json.map(data => new ServerGroup(data)))]
+
+// fetch('https://app.coscale.com/api/v1/app/' + appId + '/servers/?start=-604800&stop=0&expand=parentId', {headers:headers})
+//     .then(response => response.json())
+//     .then(json => json.map((data) => new Server(data)))
+).then(result => {
     let ocean = document.createElement('a-ocean');
-    ocean.setAttribute('width', 200);
-    ocean.setAttribute('depth', 200);
-    ocean.setAttribute('density', 30);
+    ocean.setAttribute('width', 240);
+    ocean.setAttribute('depth', 240);
+    ocean.setAttribute('density', 34);
     ocean.setAttribute('opacity', 1);
     ocean.setAttribute('position', '0 -3 0');
     scene.appendChild(ocean);
 
-    let namespaces = root.namespaces;
+    let root = ServerGroup.getRoot();
+    if (root === undefined) {
+        throw 'This is not a Kubernetes/Openshift environment.';
+    }
+
+    let namespaces = root.namespaces.slice(-6); // Limit to 6 namespaces.
     for (let i = 0; i < namespaces.length; i++) {
         let boat = spawnBoat(namespaces[i], i / namespaces.length * 2);
         scene.appendChild(boat);
     }
 }).catch(e => log('(╯°□°）╯︵ ┻━┻', e));
 
+/**
+ * Draws a namespace.
+ * @param {*} namespace The namespace that this boat represents.
+ * @param {*} angle The angle of the boat.
+ */
 function spawnBoat(namespace, angle) {
     let boat = document.createElement('a-entity');
-    let attrs = '';
 
     if (namespace.type === 'coscale') {
-        attrs += 'flag: img/coscale.png; ';
+        boat.setAttribute('boat', 'flag: img/coscale.png');
         boat.setAttribute('change-color', 'from: Red; to: #fbbc1d');
+    } else {
+        boat.setAttribute('boat', '');
     }
 
     boat.setAttribute('id', namespace.type);
-    boat.setAttribute('boat', attrs);
     boat.setAttribute('json-model', 'src: #boat');
-    boat.setAttribute('position', 40 * Math.sin(Math.PI * angle) + ' -3 ' + 40 * Math.cos(Math.PI * angle));
+    boat.setAttribute('position', 50 * Math.sin(Math.PI * angle) + ' -3 ' + 50 * Math.cos(Math.PI * angle));
     boat.setAttribute('rotation', '0 ' + (180 * angle + Math.random() * 40 - 20) + ' 0');
     boat.setAttribute('hover', 'enter: showNamespaceInfo');
     boat.setAttribute('click', 'function: handleBoat');
@@ -73,7 +93,7 @@ function spawnBoat(namespace, angle) {
             return all.concat(current);
         }
         return all;
-    }, []);
+    }, []).slice(-50); // Limit to 50 groups.
 
     for (let i = 0; i < groups.length; i++) {
         let group = groups[i];
@@ -96,11 +116,10 @@ function spawnBoat(namespace, angle) {
 
 /**
  * Spawns the pods inside a container.
- *
  * @param {*} container a-entity representing a servergroup that holds pods.
  */
 function populateContainer(container) {
-    let pods = container.data.serverGroups;
+    let pods = container.data.serverGroups.slice(-21); // Limit to 21 pods.
     for (let i = 0; i < pods.length; i++) {
         let pod = pods[i];
 

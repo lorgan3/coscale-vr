@@ -177,7 +177,7 @@ class Namespace extends ServerGroup {
 
     get deployments() {
         if (this.deployments_ === undefined) {
-            this.deployments_ = this.getGroupsOfType_('Replica sets');
+            this.deployments_ = this.getGroupsOfType_('Deployments');
         }
         return this.deployments_;
     }
