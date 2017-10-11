@@ -1,0 +1,34 @@
+{
+  "name": "coscale-vr",
+  "version": "1.0.0",
+  "description": "Proof of concept Kubernetes monitoring in VR",
+  "main": "script.js",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "transpile": "babel ./js/script.js -d dist && babel ./js/general.js -d dist && babel ./js/components.js -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lorgan3/coscale-vr.git"
+  },
+  "keywords": [
+    "VR",
+    "CoScale",
+    "Docker",
+    "Kubernetes",
+    "Openshift",
+    "Containers",
+    "Boats"
+  ],
+  "author": "Lennert Claeys",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lorgan3/coscale-vr/issues"
+  },
+  "homepage": "https://github.com/lorgan3/coscale-vr#readme"
+}

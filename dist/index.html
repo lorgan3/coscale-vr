@@ -5,17 +5,14 @@
     <title>K8S</title>
 
     <script src="https://aframe.io/releases/0.6.0/aframe.min.js"></script>
-    <script src="http://cdn.rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.js"></script> <!--json-model-->
-    <script src="http://cdn.rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.primitives.js"></script> <!--a-ocean-->
-    <!--<script src="http://cdn.rawgit.com/mayognaise/aframe-html-shader/master/dist/aframe-html-shader.js"></script>-->
-    <script src="components.js"></script>
+    <script src="http://cdn.rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script> <!--json-model-->
+    <script src="http://cdn.rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.primitives.min.js"></script> <!--a-ocean-->
+    <script src="js/components.js"></script>
 </head>
 <body>
     <a-scene id="scene" fog="type: linear; near: 40; far: 80; color: #AAB">
         <!-- cache -->
         <a-assets>
-            <a-asset-item id="roboto" src="https://cdn.aframe.io/fonts/Roboto-msdf.json"></a-asset-item>
-
             <a-asset-item id="boat" src="models/boat.json"></a-asset-item>
             <a-asset-item id="container" src="models/container.json"></a-asset-item>
             <a-asset-item id="pod" src="models/pod.json"></a-asset-item>
@@ -51,7 +48,7 @@
         <a-light type="directional" position="-5 5 -10" intensity="0.7"></a-light>
     </a-scene>
 
-    <script src="general.js"></script>
-    <script src="script.js"></script>
+    <script src="js/general.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
