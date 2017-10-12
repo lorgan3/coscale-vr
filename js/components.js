@@ -1,3 +1,4 @@
+// Function for drawing circular tubes (used by the CoScale logo).
 function Circle(angle, length, clockwise) {
     THREE.Curve.call( this );
 
@@ -12,6 +13,7 @@ Circle.prototype.getPoint = function ( t ) {
     return new THREE.Vector3(Math.cos(a), Math.sin(a), 0);
 };
 
+// The coscale logo in 3D, can be used as a loader.
 AFRAME.registerComponent('coscale-logo', {
     schema: {
       spin: {type: 'boolean', default: false},
@@ -115,7 +117,6 @@ AFRAME.registerComponent('coscale-logo', {
                     this.rightOuterMesh.rotation.z = rotation;
                     break;
                 case 2:
-                    // this.innerMesh.rotation.z -= 0.0005 * dt;
                     if (this.textMesh !== undefined) {
                         this.textMesh.rotation.y -= 0.003 * dt;
                     }
@@ -152,6 +153,7 @@ AFRAME.registerPrimitive('coscale-logo', {
     }
 });
 
+// Simple component to remove the element when it is clicked.
 AFRAME.registerComponent('dismiss', {
     init: function () {
         this.el.addEventListener('click', () => {
@@ -160,6 +162,7 @@ AFRAME.registerComponent('dismiss', {
     },
 });
 
+// Gives the element a floaty feel and adds a flag.
 AFRAME.registerComponent('boat', {
     schema: {
         amplitude: {type: 'number', default: 2},
@@ -206,46 +209,12 @@ AFRAME.registerComponent('boat', {
             rotationTmp.z = a;
             this.el.setAttribute('rotation', rotationTmp);
         }
+    }, remove: function() {
+        this.el.removeObject3D('flag');
     }
 });
 
-// Draws the edges for a json model
-AFRAME.registerComponent('edge', {
-    dependencies: ['json-model'],
-    schema: {
-        color: {type: 'number', default: 0xffffff},
-        angle: {type: 'number', default: 1}
-    },
-    init: function() {
-        this.edges = undefined;
-        this.el.addEventListener('model-loaded', (e) => {
-            if (e.detail.target == this.el) {
-                this.render(e.detail.model);
-            }
-        });
-    },
-    update: function(oldData) {
-        this.render(this.el.components['json-model'].model);
-    },
-    render: function(model) {
-        this.remove();
-        if (model !== null && model !== undefined) {
-            this.edges = new THREE.LineSegments(
-                new THREE.EdgesGeometry(model.geometry, this.data.angle),
-                new THREE.LineBasicMaterial({color: this.data.color})
-            );
-            this.el.setObject3D('edges', this.edges);
-        }
-    },
-    remove: function() {
-        if (this.edges !== undefined) {
-            this.el.removeObject3D('edges');
-            this.edges = undefined;
-        }
-    }
-});
-
-// Change the color of a json model to a different color.
+// Change the color of a json model material to a different color.
 AFRAME.registerComponent('change-color', {
     dependencies: ['json-model'],
     schema: {
@@ -294,6 +263,7 @@ AFRAME.registerComponent('click', {
     }
 });
 
+// Executes a function when the element is hovered.
 AFRAME.registerComponent('hover', {
     schema: {
         enter: {type: 'string'},
@@ -313,8 +283,7 @@ AFRAME.registerComponent('hover', {
     }
 });
 
-
-// Moves the element to the position
+// Moves the element to the position.
 AFRAME.registerComponent('move-to', {
     schema: {
         to: {type: 'vec3'},
@@ -337,13 +306,9 @@ AFRAME.registerComponent('move-to', {
     }
 });
 
-// Billboard from https://github.com/blairmacintyre/aframe-look-at-billboard-component
-// Add 'lock' mechanic to stay on screen.
+// Billboard similar to https://github.com/blairmacintyre/aframe-look-at-billboard-component
 AFRAME.registerComponent('billboard', {
     schema: {
-        lock: {type: 'boolean', default: false},
-        dist: {type: 'number', default: 2},
-        margin: {type: 'number', default: Math.PI / 6},
         scale: {type: 'number', default: -1}
     },
     init: function () {
@@ -351,16 +316,10 @@ AFRAME.registerComponent('billboard', {
     },
 
     tick: function (t) {
-        var self = this;
-        var target = self.el.sceneEl.camera;
-        var object3D = self.el.object3D;
+        var target = this.el.sceneEl.camera;
+        var object3D = this.el.object3D;
 
         if (target) {
-            if (this.data.lock === true) {
-                object3D.position.x = -this.data.dist * Math.sin(target.parent.rotation.y);
-                object3D.position.z = -this.data.dist * Math.cos(target.parent.rotation.y);
-            }
-
             target.updateMatrixWorld();
             this.vector.setFromMatrixPosition(target.matrixWorld);
             if (object3D.parent) {
@@ -377,6 +336,7 @@ AFRAME.registerComponent('billboard', {
     }
 });
 
+// Draws a panel for a container.
 AFRAME.registerComponent('container-info', {
     schema: {
         name: {type: 'string'},
@@ -436,6 +396,7 @@ AFRAME.registerPrimitive('container-info', {
     }
 });
 
+// Draws a panel for a namespace.
 AFRAME.registerComponent('namespace-info', {
     schema: {
         name: {type: 'string'},
@@ -504,6 +465,7 @@ AFRAME.registerPrimitive('namespace-info', {
     }
 });
 
+// Draws a panel for a group of pods.
 AFRAME.registerComponent('pod-info', {
     schema: {
         name: {type: 'string'},
