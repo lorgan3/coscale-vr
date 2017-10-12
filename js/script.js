@@ -57,10 +57,12 @@ if (appId === null) {
 
 Promise.all([
     fetch('https://app.coscale.com/api/v1/app/' + appId + '/servergroups/?start=-604800&stop=0&expand=parentId&expand=serverIds', {headers: headers})
+        .then(handleErrors)
         .then(response => response.json())
         .then(json => json.map((data) => new ServerGroup(data))),
 
     // fetch('https://app.coscale.com/api/v1/app/' + appId + '/servers/?start=-604800&stop=0&expand=parentId', {headers:headers})
+    //     .then(handleErrors)
     //     .then(response => response.json())
     //     .then(json => json.map((data) => new Server(data)))
 ]).then((result) => {
@@ -194,6 +196,7 @@ function fetchPodData(pods) {
         method: 'POST',
         body: data
     })
+    .then(handleErrors)
     .then(response => response.json())
     .then(json => {
         let podMap = new Map();
@@ -220,7 +223,8 @@ function fetchPodData(pods) {
             containerInfo.setAttribute('memory', containerInfo.container.memory);
             containerInfo.setAttribute('cpu', containerInfo.container.cpu);
         }
-    });
+    })
+    .catch(e => log('¯\\_(ツ)_/¯', e));
 }
 
 function teleport(object, distance, height) {
