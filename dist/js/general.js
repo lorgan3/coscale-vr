@@ -1,8 +1,15 @@
 'use strict';
 
-var log = function () {
+function log() {
     console.log([].slice.call(arguments));
 };
+
+function handleErrors(response) {
+    if (response.ok === false) {
+        throw 'Error while fetching data.';
+    }
+    return response;
+}
 
 let models = {};
 

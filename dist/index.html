@@ -16,6 +16,7 @@
             <a-asset-item id="boat" src="models/boat.json"></a-asset-item>
             <a-asset-item id="container" src="models/container.json"></a-asset-item>
             <a-asset-item id="pod" src="models/pod.json"></a-asset-item>
+            <a-asset-item id="rowboat" src="models/rowboat.json"></a-asset-item>
 
             <img id="kubernetes" src="img/kubernetes.png"></img>
             <img id="coscale" src="img/coscale.png"></img>
@@ -23,10 +24,18 @@
 
             <img id="cpu" src="img/cpu.png"></img>
             <img id="memory" src="img/memory.png"></img>
+
+            <img id="tux" src="img/tux.png"></img>
         </a-assets>
 
         <!-- fancy loader -->
         <coscale-logo class="clickable" position="0 6 -3" spin=true dismiss></coscale-logo>
+
+        <a-entity class="clickable" json-model="src: #rowboat" float position="0 -2.5 -3" click="function: handleTux">
+            <a-entity position="0 2.2 0" geometry="primitive: plane; width: 2; height: 4" material="shader: flat; transparent: true; side: double; src: #tux" billboard="lockX: true"></a-entity>
+        </a-entity>
+
+        <!-- label elements -->
         <container-info id="container-info" position="0 0 0" visible="false"></container-info>
         <namespace-info id="namespace-info" position="0 0 0" visible="false"></namespace-info>
         <pod-info id="pod-info" position="0 0 0" visible="false"></pod-info>

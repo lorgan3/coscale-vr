@@ -46,9 +46,10 @@ if (appId === null) {
     headers.append('HTTPAuthorization', prompt('HTTPAuthorization for ' + appId));
 }
 
-Promise.all([fetch('https://app.coscale.com/api/v1/app/' + appId + '/servergroups/?start=-604800&stop=0&expand=parentId&expand=serverIds', { headers: headers }).then(response => response.json()).then(json => json.map(data => new ServerGroup(data)))]
+Promise.all([fetch('https://app.coscale.com/api/v1/app/' + appId + '/servergroups/?start=-604800&stop=0&expand=parentId&expand=serverIds', { headers: headers }).then(handleErrors).then(response => response.json()).then(json => json.map(data => new ServerGroup(data)))]
 
 // fetch('https://app.coscale.com/api/v1/app/' + appId + '/servers/?start=-604800&stop=0&expand=parentId', {headers:headers})
+//     .then(handleErrors)
 //     .then(response => response.json())
 //     .then(json => json.map((data) => new Server(data)))
 ).then(result => {
@@ -81,12 +82,13 @@ function spawnBoat(namespace, angle) {
     let boat = document.createElement('a-entity');
 
     if (namespace.type === 'coscale') {
-        boat.setAttribute('boat', 'flag: img/coscale.png');
+        boat.setAttribute('flag', 'logo: img/coscale.png');
         boat.setAttribute('change-color', 'from: Red; to: #fbbc1d');
     } else {
-        boat.setAttribute('boat', '');
+        boat.setAttribute('flag', '');
     }
 
+    boat.setAttribute('float', '');
     boat.setAttribute('id', namespace.type);
     boat.setAttribute('json-model', 'src: #boat');
     boat.setAttribute('position', 50 * Math.sin(Math.PI * angle) + ' -3 ' + 50 * Math.cos(Math.PI * angle));
@@ -179,7 +181,7 @@ function fetchPodData(pods) {
         headers: headers,
         method: 'POST',
         body: data
-    }).then(response => response.json()).then(json => {
+    }).then(handleErrors).then(response => response.json()).then(json => {
         let podMap = new Map();
         pods.map(pod => podMap.set(pod.data.id, pod));
 
@@ -204,7 +206,7 @@ function fetchPodData(pods) {
             containerInfo.setAttribute('memory', containerInfo.container.memory);
             containerInfo.setAttribute('cpu', containerInfo.container.cpu);
         }
-    });
+    }).catch(e => log('¯\\_(ツ)_/¯', e));
 }
 
 function teleport(object, distance, height) {
@@ -278,6 +280,14 @@ function handleContainer(e, el) {
         showPodInfo();
         showContainerInfo();
     }
+}
+
+function handleTux(e, el) {
+    if (inContainer === true) {
+        return;
+    }
+
+    teleport(el.object3D, 3, 3);
 }
 
 function cleanupBoat() {
