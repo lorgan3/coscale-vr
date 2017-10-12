@@ -409,11 +409,15 @@ AFRAME.registerComponent('container-info', {
         this.ctx.font = 'Bold 40px Helvetica';
         let y = wrapText(this.ctx, this.data.name, 6, 40, 500, 40);
 
-        drawSegmentBar(this.ctx, 50, y + 20, this.data.cpu);
-        this.ctx.drawImage(document.getElementById('cpu'), 10, y + 20, 32, 32);
+        if (this.data.cpu !== undefined) {
+            drawSegmentBar(this.ctx, 50, y + 20, this.data.cpu);
+            this.ctx.drawImage(document.getElementById('cpu'), 10, y + 20, 32, 32);
+        }
 
-        drawSegmentBar(this.ctx, 50, y + 90, this.data.memory);
-        this.ctx.drawImage(document.getElementById('memory'), 10, y + 90, 32, 32);
+        if (this.data.memory !== undefined) {
+            drawSegmentBar(this.ctx, 50, y + 90, this.data.memory, true);
+            this.ctx.drawImage(document.getElementById('memory'), 10, y + 90, 32, 32);
+        }
 
         this.texture.needsUpdate = true;
     }
@@ -554,16 +558,16 @@ AFRAME.registerPrimitive('pod-info', {
  * @param {*} x x
  * @param {*} y y
  * @param {*} value Percentage of the bar
+ * @param {*} invert Invert the colors?
  */
-function drawSegmentBar(ctx, x, y, value) {
+function drawSegmentBar(ctx, x, y, value, invert) {
     ctx.fillStyle = '#fff';
     ctx.rect(x, y, 304, 34);
-    //ctx.stroke();
 
-    ctx.fillText(Math.round(value * 1000) / 10 + '%', x + 310, y + 30);
+    ctx.fillText(Math.round(value * 100) / 100 + '%', x + 310, y + 30);
 
-    for (let i = 0; i < value * 10; i++) {
-        ctx.fillStyle = blendColors('#00ff00', '#ff0000', i / 10);
+    for (let i = 0; i < value / 10; i++) {
+        ctx.fillStyle = blendColors('#00ff00', '#ff0000', invert === true ? (1 - i / 10) : 1 / 10);
         ctx.fillRect(x + 2 + i * 30 , y + 2, 28, 30);
     }
 }

@@ -10,7 +10,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "transpile": "babel ./js/script.js -d dist && babel ./js/general.js -d dist && babel ./js/components.js -d dist"
+    "transpile": "babel ./js/*.js -d dist"
   },
   "repository": {
     "type": "git",

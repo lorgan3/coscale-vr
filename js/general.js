@@ -4,6 +4,10 @@ var log = function() {
 
 let models = {};
 
+/**
+ * Simplified implementation of the CoScale model with some ES6 sugar.
+ * Actually it's all ES6 sugar.
+ */
 class CsModel {
     static get key() {
         return 'CsModel';
@@ -55,6 +59,10 @@ class CsModel {
     }
 
     static get(id) {
+        if (models[this.key] === undefined) {
+            return null;
+        }
+
         return models[this.key].get(id);
     }
 }
@@ -66,6 +74,10 @@ class Server extends CsModel {
 
     constructor(data) {
         super('.Server', data);
+    }
+
+    get short() {
+        return 's' + this.id;
     }
 }
 
@@ -101,6 +113,10 @@ class ServerGroup extends CsModel {
             }
         }
         return this.servers_;
+    }
+
+    get short() {
+        return 'g' + this.id;
     }
 
     static getRoot() {
@@ -206,5 +222,42 @@ class Namespace extends ServerGroup {
             }
         }
         return null;
+    }
+}
+
+/**
+ * Simplified implementation of the subject spec.
+ */
+class SubjectSpec {
+    constructor(spec) {
+        this.servers_ = [];
+        this.serverGroups_ = [];
+
+        let re = /([gs])(\d+)|a/g;
+        let m;
+        while (m = re.exec(spec)) {
+            switch(m[1]) {
+                case 's':
+                    this.servers_.push(m[2]);
+                    break;
+                case 'g':
+                    this.serverGroups_.push(m[2]);
+                    break;
+                default:
+                    // The application?
+            }
+        }
+    }
+
+    get servers() {
+        return this.servers_.map(id => Server.get(Number(id)));
+    }
+
+    get serverGroups() {
+        return this.serverGroups_.map(id => ServerGroup.get(Number(id)));
+    }
+
+    get subjects() {
+        return this.servers.concat(this.servergroups);
     }
 }
