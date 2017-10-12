@@ -162,19 +162,34 @@ AFRAME.registerComponent('dismiss', {
     },
 });
 
-// Gives the element a floaty feel and adds a flag.
-AFRAME.registerComponent('boat', {
+// Makes the element a floaty.
+AFRAME.registerComponent('float', {
     schema: {
         amplitude: {type: 'number', default: 2},
         speed: {type: 'number', default: 1},
-        color: {type: 'color', default: '#ff0000'},
-        flag: {type: 'string', default: 'img/kubernetes.png'}
     },
     init: function () {
         this.offset = Math.random();
-        this.createFlag();
     },
-    createFlag: function() {
+    tick: function(t, dt) {
+        if (typeof(inContainer) !== 'undefined' && inContainer === false) {
+            let rotationTmp = this.rotationTmp || {x: 0, y: 0, z: 0};
+            let rotation = this.el.getAttribute('rotation');
+            let a = Math.sin(this.offset + t / 1000) * this.data.amplitude;
+            rotationTmp.x = a;
+            rotationTmp.y = rotation.y;
+            rotationTmp.z = a;
+            this.el.setAttribute('rotation', rotationTmp);
+        }
+    }
+});
+
+// Adds a flag.
+AFRAME.registerComponent('flag', {
+    schema: {
+        logo: {type: 'string', default: 'img/kubernetes.png'}
+    },
+    init: function() {
         this.pole = new THREE.Mesh(
             new THREE.BoxBufferGeometry(0.1, 12, 0.1),
             new THREE.MeshBasicMaterial({color: 0x8b4513})
@@ -182,7 +197,7 @@ AFRAME.registerComponent('boat', {
         this.pole.position.set(-16, 12, 4);
 
         let loader = new THREE.TextureLoader();
-        loader.load(this.data.flag, (texture) => {
+        loader.load(this.data.logo, (texture) => {
             this.flag.material.color.set(0xffffff);
             this.flag.material.map = texture;
             this.flag.material.needsUpdate = true;
@@ -199,17 +214,7 @@ AFRAME.registerComponent('boat', {
         this.pole.add(this.flag);
         this.el.setObject3D('flag', this.pole);
     },
-    tick: function(t, dt) {
-        if (inContainer === false) {
-            let rotationTmp = this.rotationTmp || {x: 0, y: 0, z: 0};
-            let rotation = this.el.getAttribute('rotation');
-            let a = Math.sin(this.offset + t / 1000) * this.data.amplitude;
-            rotationTmp.x = a;
-            rotationTmp.y = rotation.y;
-            rotationTmp.z = a;
-            this.el.setAttribute('rotation', rotationTmp);
-        }
-    }, remove: function() {
+    remove: function() {
         this.el.removeObject3D('flag');
     }
 });
@@ -309,15 +314,17 @@ AFRAME.registerComponent('move-to', {
 // Billboard similar to https://github.com/blairmacintyre/aframe-look-at-billboard-component
 AFRAME.registerComponent('billboard', {
     schema: {
-        scale: {type: 'number', default: -1}
+        scale: {type: 'number', default: -1},
+        lockX: {type: 'boolean', default: false}
     },
     init: function () {
         this.vector = new THREE.Vector3();
     },
 
     tick: function (t) {
-        var target = this.el.sceneEl.camera;
-        var object3D = this.el.object3D;
+        let target = this.el.sceneEl.camera;
+        let object3D = this.el.object3D;
+        let x = object3D.rotation.x;
 
         if (target) {
             target.updateMatrixWorld();
@@ -327,6 +334,10 @@ AFRAME.registerComponent('billboard', {
                 object3D.parent.worldToLocal(this.vector);
             }
             object3D.lookAt(this.vector);
+
+            if (this.data.lockX === true) {
+                object3D.rotation.x = x;
+            }
 
             if (this.data.scale > 0) {
                 let scale = this.vector.subVectors(object3D.position, this.vector).length() / this.data.scale;

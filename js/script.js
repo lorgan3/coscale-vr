@@ -95,12 +95,13 @@ function spawnBoat(namespace, angle) {
     let boat = document.createElement('a-entity');
 
     if (namespace.type === 'coscale') {
-        boat.setAttribute('boat', 'flag: img/coscale.png');
+        boat.setAttribute('flag', 'logo: img/coscale.png');
         boat.setAttribute('change-color', 'from: Red; to: #fbbc1d');
     } else {
-        boat.setAttribute('boat', '');
+        boat.setAttribute('flag', '');
     }
 
+    boat.setAttribute('float', '');
     boat.setAttribute('id', namespace.type);
     boat.setAttribute('json-model', 'src: #boat');
     boat.setAttribute('position', (50 * Math.sin(Math.PI * angle)) + ' -3 ' + (50 * Math.cos(Math.PI * angle)));
@@ -298,6 +299,14 @@ function handleContainer(e, el) {
         showPodInfo();
         showContainerInfo();
     }
+}
+
+function handleTux(e, el) {
+    if (inContainer === true) {
+        return;
+    }
+
+    teleport(el.object3D, 3, 3);
 }
 
 function cleanupBoat() {
