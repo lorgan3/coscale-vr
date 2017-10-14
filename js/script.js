@@ -1,5 +1,6 @@
 let scene = document.getElementById('scene');
 let camera = document.getElementById('camera-holder');
+let logo = document.getElementById('logo');
 
 let containerInfo = document.getElementById('container-info');
 let namespaceInfo = document.getElementById('namespace-info');
@@ -66,18 +67,13 @@ Promise.all([
     //     .then(response => response.json())
     //     .then(json => json.map((data) => new Server(data)))
 ]).then((result) => {
-    let ocean = document.createElement('a-ocean');
-    ocean.setAttribute('width', 240);
-    ocean.setAttribute('depth', 240);
-    ocean.setAttribute('density', 34);
-    ocean.setAttribute('opacity', 1);
-    ocean.setAttribute('position', '0 -3 0');
-    scene.appendChild(ocean);
-
     let root = ServerGroup.getRoot();
     if (root === undefined) {
         throw 'This is not a Kubernetes/Openshift environment.';
     }
+
+    logo.setAttribute('class', 'clickable'); // The raycaster needs to update for the logo to become clickable, this happens implicitly when we spawn the namespaces.
+    logo.setAttribute('spin', true);
 
     let namespaces = root.namespaces.slice(-6); // Limit to 6 namespaces.
     for (let i = 0; i < namespaces.length; i++) {
