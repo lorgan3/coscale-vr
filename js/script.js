@@ -302,6 +302,9 @@ function handleTux(e, el) {
         return;
     }
 
+    cleanupBoat();
+    cleanupContainer();
+
     teleport(el.object3D, 3, 3);
 }
 
@@ -439,4 +442,3 @@ function showPodInfo(e, pod) {
         log('Missing element to display pod info!');
     }
 }
-
